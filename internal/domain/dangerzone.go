@@ -1,7 +1,5 @@
 package domain
 
-import "time"
-
 type DangerZoneCreateReq struct {
 	DeviceID  string  `json:"device_id"`
 	Latitude  float64 `json:"latitude"`
@@ -24,6 +22,5 @@ func (r *DangerZoneCreateReq) ToDangerZone() *DangerZone {
 		Latitude:  r.Latitude,
 		Longitude: r.Longitude,
 		Radius:    r.Radius,
-		EndTs:     time.Now().UTC().Add(time.Duration(r.TTL) * time.Second).Unix(),
 	}
 }

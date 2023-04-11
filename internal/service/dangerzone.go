@@ -3,6 +3,7 @@ package service
 import (
 	"hte-danger-zone-ms/internal/domain"
 	"hte-danger-zone-ms/internal/repository"
+	"time"
 )
 
 type DangerZoneService interface {
@@ -26,5 +27,8 @@ func (svc *dangerZoneService) Create(body *domain.DangerZoneCreateReq) error {
 		return err
 	}
 
-	return svc.eventRepo.Create(body.ToDangerZone())
+	dz := body.ToDangerZone()
+	dz.EndTs = time.Now().UTC().Add(time.Duration(body.TTL) * time.Second).Unix()
+
+	return svc.eventRepo.Create(dz)
 }
