@@ -25,16 +25,17 @@ func (ctrl *dangerZoneController) Create(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "failed ShouldBindJSON",
-			"error":   err,
+			"error":   err.Error(),
 		})
 		return
 	}
 
 	err := ctrl.svc.Create(&body)
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "failed Create",
-			"error":   err,
+			"error":   err.Error(),
 		})
 		return
 	}

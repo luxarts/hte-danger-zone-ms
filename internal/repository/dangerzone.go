@@ -8,7 +8,8 @@ import (
 )
 
 type DangerZoneRepository interface {
-	Create(body *domain.DangerZoneCreateReq) error
+	Create(body *domain.DangerZone) error
+	GetByDeviceID(deviceID string) (*domain.DangerZone, error)
 }
 
 type dangerZoneRepository struct {
@@ -23,7 +24,7 @@ func NewDangerZoneRepository(mc *mongo.Client, database string, collection strin
 	}
 }
 
-func (repo *dangerZoneRepository) Create(body *domain.DangerZoneCreateReq) error {
+func (repo *dangerZoneRepository) Create(body *domain.DangerZone) error {
 	bsonBody, err := bson.Marshal(body)
 	if err != nil {
 		return err
@@ -32,4 +33,23 @@ func (repo *dangerZoneRepository) Create(body *domain.DangerZoneCreateReq) error
 	ctx := context.Background()
 	_, err = repo.db.Collection(repo.collection).InsertOne(ctx, bsonBody)
 	return err
+}
+func (repo *dangerZoneRepository) GetByDeviceID(deviceID string) (*domain.DangerZone, error) {
+	ctx := context.Background()
+
+	var resp domain.DangerZone
+
+	err := repo.db.Collection(repo.collection).FindOne(ctx, bson.D{
+		{"device_id", deviceID},
+	}).Decode(&resp)
+
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
 }

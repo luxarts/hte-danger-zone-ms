@@ -9,11 +9,11 @@ type DangerZoneCreateReq struct {
 }
 
 type DangerZone struct {
-	DeviceID  string  `json:"did"`
-	Latitude  float64 `json:"lat"`
-	Longitude float64 `json:"lon"`
-	Radius    float64 `json:"r"`
-	EndTs     int64   `json:"e_ts"`
+	DeviceID  string  `json:"did" bson:"device_id"`
+	Latitude  float64 `json:"lat" bson:"latitude"`
+	Longitude float64 `json:"lon" bson:"longitude"`
+	Radius    float64 `json:"r" bson:"radius"`
+	EndTs     int64   `json:"e_ts" bson:"end_ts"`
 }
 
 func (r *DangerZoneCreateReq) ToDangerZone() *DangerZone {
