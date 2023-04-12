@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"hte-danger-zone-ms/internal/domain"
 )
@@ -10,6 +11,7 @@ import (
 type DangerZoneRepository interface {
 	Create(body *domain.DangerZone) error
 	GetByDeviceID(deviceID string) (*domain.DangerZone, error)
+	Delete(deviceID primitive.ObjectID) error
 }
 
 type dangerZoneRepository struct {
@@ -52,4 +54,13 @@ func (repo *dangerZoneRepository) GetByDeviceID(deviceID string) (*domain.Danger
 	}
 
 	return &resp, nil
+}
+
+func (repo *dangerZoneRepository) Delete(deviceID primitive.ObjectID) error {
+	ctx := context.Background()
+	_, err := repo.db.Collection(repo.collection).DeleteOne(ctx, bson.D{{"device_id", deviceID}})
+	if err != nil {
+		return err
+	}
+	return nil
 }
