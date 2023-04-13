@@ -9,6 +9,7 @@ import (
 
 type DangerZoneController interface {
 	Create(c *gin.Context)
+	Delete(c *gin.Context)
 }
 
 type dangerZoneController struct {
@@ -41,4 +42,24 @@ func (ctrl *dangerZoneController) Create(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, body)
+}
+
+func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
+	deviceID := ctx.Param("deviceID")
+	if deviceID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid deviceID",
+		})
+		return
+	}
+	err := ctrl.svc.Delete(deviceID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal Error",
+		})
+		return
+	}
+	ctx.JSON(http.StatusNoContent, gin.H{
+		"message": "Dangerzone eliminated",
+	})
 }

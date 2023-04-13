@@ -51,7 +51,7 @@ func mapRoutes(r *gin.Engine) {
 
 	// Init repositories
 	repo := repository.NewDangerZoneRepository(mongoClient, os.Getenv(defines.EnvMongoDB), os.Getenv(defines.EnvDangerZonesCollection))
-	dzeRepo := repository.NewDangerZoneEventRepository(redisClient, os.Getenv(defines.EnvRedisChannelCreateDangerZone))
+	dzeRepo := repository.NewDangerZoneEventRepository(redisClient, os.Getenv(defines.EnvRedisChannelCreateDangerZone), os.Getenv(defines.EnvRedisChannelDeleteDangerZone))
 
 	// Init services
 	svc := service.NewDangerZoneService(repo, dzeRepo)
@@ -61,4 +61,5 @@ func mapRoutes(r *gin.Engine) {
 
 	// Routes
 	r.POST(defines.EndpointCreateDangerZone, ctrl.Create)
+	r.DELETE(defines.EndpointDeleteDangerZone, ctrl.Delete)
 }

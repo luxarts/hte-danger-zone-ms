@@ -9,15 +9,17 @@ import (
 
 type DangerZoneEventRepository interface {
 	Create(body *domain.DangerZone) error
+	Delete(deviceID string) error
 }
 
 type dangerZoneEventRepository struct {
-	channel string
-	rc      *redis.Client
+	channelCreateDZ string
+	channelDeleteDZ string
+	rc              *redis.Client
 }
 
-func NewDangerZoneEventRepository(rc *redis.Client, channel string) DangerZoneEventRepository {
-	return &dangerZoneEventRepository{rc: rc, channel: channel}
+func NewDangerZoneEventRepository(rc *redis.Client, channelCreateDZ string, channelDeleteDZ string) DangerZoneEventRepository {
+	return &dangerZoneEventRepository{rc: rc, channelCreateDZ: channelCreateDZ, channelDeleteDZ: channelDeleteDZ}
 }
 
 func (repo *dangerZoneEventRepository) Create(body *domain.DangerZone) error {
@@ -27,5 +29,10 @@ func (repo *dangerZoneEventRepository) Create(body *domain.DangerZone) error {
 	}
 
 	ctx := context.Background()
-	return repo.rc.Publish(ctx, repo.channel, bodyBytes).Err()
+	return repo.rc.Publish(ctx, repo.channelCreateDZ, bodyBytes).Err()
+}
+
+func (repo *dangerZoneEventRepository) Delete(deviceID string) error {
+	ctx := context.Background()
+	return repo.rc.Publish(ctx, repo.channelDeleteDZ, deviceID).Err()
 }

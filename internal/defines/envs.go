@@ -7,4 +7,5 @@ const (
 	EnvRedisHost                    = "REDIS_HOST"
 	EnvRedisPassword                = "REDIS_PASSWORD"
 	EnvRedisChannelCreateDangerZone = "REDIS_CHANNEL_CREATE_ZONE"
+	EnvRedisChannelDeleteDangerZone = "REDIS_CHANNEL_DELETE_ZONE"
 )

@@ -9,6 +9,7 @@ import (
 
 type DangerZoneService interface {
 	Create(body *domain.DangerZoneCreateReq) error
+	Delete(deviceID string) error
 }
 type dangerZoneService struct {
 	repo      repository.DangerZoneRepository
@@ -40,4 +41,12 @@ func (svc *dangerZoneService) Create(body *domain.DangerZoneCreateReq) error {
 	}
 
 	return svc.eventRepo.Create(dz)
+}
+
+func (svc *dangerZoneService) Delete(deviceID string) error {
+	err := svc.repo.Delete(deviceID)
+	if err != nil {
+		return err
+	}
+	return svc.eventRepo.Delete(deviceID)
 }

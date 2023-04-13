@@ -10,6 +10,7 @@ import (
 type DangerZoneRepository interface {
 	Create(body *domain.DangerZone) error
 	GetByDeviceID(deviceID string) (*domain.DangerZone, error)
+	Delete(deviceID string) error
 }
 
 type dangerZoneRepository struct {
@@ -52,4 +53,13 @@ func (repo *dangerZoneRepository) GetByDeviceID(deviceID string) (*domain.Danger
 	}
 
 	return &resp, nil
+}
+
+func (repo *dangerZoneRepository) Delete(deviceID string) error {
+	ctx := context.Background()
+	_, err := repo.db.Collection(repo.collection).DeleteOne(ctx, bson.D{{"device_id", deviceID}})
+	if err != nil {
+		return err
+	}
+	return nil
 }
