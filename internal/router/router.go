@@ -60,6 +60,8 @@ func mapRoutes(r *gin.Engine) {
 	ctrl := controller.NewDangerZoneController(svc)
 
 	// Routes
+	r.GET(defines.EndpointGetAllDangerZones, ctrl.GetAll)
+	r.GET(defines.EndpointGetDangerZoneByDeviceId, ctrl.GetByDeviceID)
 	r.POST(defines.EndpointCreateDangerZone, ctrl.Create)
 	r.DELETE(defines.EndpointDeleteDangerZone, ctrl.Delete)
 }

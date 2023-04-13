@@ -1,6 +1,8 @@
 package defines
 
 const (
-	EndpointCreateDangerZone = "/:companyID/dangerzone"
-	EndpointDeleteDangerZone = "/:companyID/dangerzone/:deviceID"
+	EndpointCreateDangerZone        = "/:companyID/dangerzone"
+	EndpointDeleteDangerZone        = "/:companyID/dangerzone/:deviceID"
+	EndpointGetAllDangerZones       = "/:companyID/dangerzones"
+	EndpointGetDangerZoneByDeviceId = "/:companyID/dangerzone"
 )

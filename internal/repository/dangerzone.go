@@ -5,12 +5,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"hte-danger-zone-ms/internal/domain"
+	"log"
 )
 
 type DangerZoneRepository interface {
 	Create(body *domain.DangerZone) error
 	GetByDeviceID(deviceID string) (*domain.DangerZone, error)
 	Delete(deviceID string) error
+	GetAll() (*[]domain.DangerZone, error)
 }
 
 type dangerZoneRepository struct {
@@ -62,4 +64,29 @@ func (repo *dangerZoneRepository) Delete(deviceID string) error {
 		return err
 	}
 	return nil
+}
+
+func (repo *dangerZoneRepository) GetAll() (*[]domain.DangerZone, error) {
+	ctx := context.Background()
+	var resp []domain.DangerZone
+	dgBson, err := repo.db.Collection(repo.collection).Find(ctx, bson.D{})
+
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	for dgBson.Next(ctx) {
+		var dangerZone domain.DangerZone
+		err := dgBson.Decode(&dangerZone)
+		if err != nil {
+			log.Println("Error unmarshal danger zone")
+			continue
+		}
+		resp = append(resp, dangerZone)
+	}
+	return &resp, nil
 }
