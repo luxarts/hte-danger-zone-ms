@@ -1,7 +1,6 @@
 package service
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"hte-danger-zone-ms/internal/defines"
 	"hte-danger-zone-ms/internal/domain"
 	"hte-danger-zone-ms/internal/repository"
@@ -10,7 +9,7 @@ import (
 
 type DangerZoneService interface {
 	Create(body *domain.DangerZoneCreateReq) error
-	Delete(deviceID primitive.ObjectID) error
+	Delete(deviceID string) error
 }
 type dangerZoneService struct {
 	repo      repository.DangerZoneRepository
@@ -44,10 +43,10 @@ func (svc *dangerZoneService) Create(body *domain.DangerZoneCreateReq) error {
 	return svc.eventRepo.Create(dz)
 }
 
-func (svc *dangerZoneService) Delete(deviceID primitive.ObjectID) error {
+func (svc *dangerZoneService) Delete(deviceID string) error {
 	err := svc.repo.Delete(deviceID)
 	if err != nil {
 		return err
 	}
-	return svc.eventRepo.Delete(deviceID.Hex())
+	return svc.eventRepo.Delete(deviceID)
 }

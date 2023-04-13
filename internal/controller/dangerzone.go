@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"hte-danger-zone-ms/internal/domain"
 	"hte-danger-zone-ms/internal/service"
 	"net/http"
@@ -53,16 +52,12 @@ func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
 		})
 		return
 	}
-	objID, err := primitive.ObjectIDFromHex(deviceID)
+	err := ctrl.svc.Delete(deviceID)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid deviceID",
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal Error",
 		})
 		return
-	}
-	err = ctrl.svc.Delete(objID)
-	if err != nil {
-
 	}
 	ctx.JSON(http.StatusNoContent, gin.H{
 		"message": "Dangerzone eliminated",
