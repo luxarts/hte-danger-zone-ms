@@ -60,8 +60,8 @@ func (repo *dangerZoneRepository) GetAll(filter map[string]string) (*[]domain.Da
 		var dangerZone domain.DangerZone
 		err = dgBson.Decode(&dangerZone)
 		if err != nil {
-			log.Println("Error unmarshal danger zone")
-			continue
+			log.Println("Error Decode danger zone")
+			return nil, err
 		}
 		resp = append(resp, dangerZone)
 	}

@@ -25,7 +25,7 @@ func NewDangerZoneService(repo repository.DangerZoneRepository, eventRepo reposi
 }
 
 func (svc *dangerZoneService) Create(body *domain.DangerZoneCreateReq) error {
-	dz, err := svc.repo.GetAll(map[string]string{"device_id": body.DeviceID})
+	dz, err := svc.repo.GetAll(map[string]string{defines.QueryParamDeviceID: body.DeviceID})
 	if err != nil {
 		return err
 	}

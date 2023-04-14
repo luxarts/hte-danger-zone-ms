@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"hte-danger-zone-ms/internal/defines"
 	"hte-danger-zone-ms/internal/domain"
 	"hte-danger-zone-ms/internal/service"
 	"net/http"
@@ -67,18 +68,18 @@ func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
 }
 
 func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
-	deviceID, _ := ctx.GetQuery("device_id")
+	deviceID, _ := ctx.GetQuery(defines.QueryParamDeviceID)
 	filter := make(map[string]string)
 	if deviceID != "" {
-		filter["device_id"] = deviceID
+		filter[defines.QueryParamDeviceID] = deviceID
 	}
-	dangerZonesBson, err := ctrl.svc.GetAll(filter)
+	dangerZones, err := ctrl.svc.GetAll(filter)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Internal Error"})
 		return
 	}
-	dangerZonesJson, err := json.Marshal(dangerZonesBson)
+	dangerZonesJson, err := json.Marshal(dangerZones)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Internal Error",
