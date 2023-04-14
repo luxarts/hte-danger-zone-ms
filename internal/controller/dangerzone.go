@@ -12,7 +12,6 @@ type DangerZoneController interface {
 	Create(c *gin.Context)
 	Delete(c *gin.Context)
 	GetAll(c *gin.Context)
-	GetByDeviceID(c *gin.Context)
 }
 
 type dangerZoneController struct {
@@ -68,11 +67,15 @@ func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
 }
 
 func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
-	dangerZonesBson, err := ctrl.svc.GetAll()
+	deviceID, _ := ctx.GetQuery("device_id")
+	filter := make(map[string]string)
+	if deviceID != "" {
+		filter["device_id"] = deviceID
+	}
+	dangerZonesBson, err := ctrl.svc.GetAll(filter)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal Error",
-		})
+			"message": "Internal Error"})
 		return
 	}
 	dangerZonesJson, err := json.Marshal(dangerZonesBson)
@@ -83,23 +86,4 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, dangerZonesJson)
-}
-
-func (ctrl *dangerZoneController) GetByDeviceID(ctx *gin.Context) {
-	deviceID, _ := ctx.GetQuery("device_id")
-	if deviceID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid deviceID",
-		})
-		return
-	}
-	dangerZoneBson, err := ctrl.svc.GetByDeviceID(deviceID)
-	dangerZoneJson, err := json.Marshal(dangerZoneBson)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal Error",
-		})
-		return
-	}
-	ctx.JSON(http.StatusOK, dangerZoneJson)
 }
