@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"hte-danger-zone-ms/internal/defines"
 	"hte-danger-zone-ms/internal/domain"
 	"hte-danger-zone-ms/internal/service"
 	"net/http"
@@ -10,6 +12,7 @@ import (
 type DangerZoneController interface {
 	Create(c *gin.Context)
 	Delete(c *gin.Context)
+	GetAll(c *gin.Context)
 }
 
 type dangerZoneController struct {
@@ -62,4 +65,26 @@ func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
 	ctx.JSON(http.StatusNoContent, gin.H{
 		"message": "Dangerzone eliminated",
 	})
+}
+
+func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
+	deviceID, _ := ctx.GetQuery(defines.QueryParamDeviceID)
+	filter := make(map[string]string)
+	if deviceID != "" {
+		filter[defines.QueryParamDeviceID] = deviceID
+	}
+	dangerZones, err := ctrl.svc.GetAll(filter)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal Error"})
+		return
+	}
+	dangerZonesJson, err := json.Marshal(dangerZones)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal Error",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, dangerZonesJson)
 }

@@ -5,12 +5,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"hte-danger-zone-ms/internal/domain"
+	"log"
 )
 
 type DangerZoneRepository interface {
 	Create(body *domain.DangerZone) error
-	GetByDeviceID(deviceID string) (*domain.DangerZone, error)
 	Delete(deviceID string) error
+	GetAll(filter map[string]string) (*[]domain.DangerZone, error)
 }
 
 type dangerZoneRepository struct {
@@ -35,25 +36,6 @@ func (repo *dangerZoneRepository) Create(body *domain.DangerZone) error {
 	_, err = repo.db.Collection(repo.collection).InsertOne(ctx, bsonBody)
 	return err
 }
-func (repo *dangerZoneRepository) GetByDeviceID(deviceID string) (*domain.DangerZone, error) {
-	ctx := context.Background()
-
-	var resp domain.DangerZone
-
-	err := repo.db.Collection(repo.collection).FindOne(ctx, bson.D{
-		{"device_id", deviceID},
-	}).Decode(&resp)
-
-	if err == mongo.ErrNoDocuments {
-		return nil, nil
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &resp, nil
-}
 
 func (repo *dangerZoneRepository) Delete(deviceID string) error {
 	ctx := context.Background()
@@ -62,4 +44,26 @@ func (repo *dangerZoneRepository) Delete(deviceID string) error {
 		return err
 	}
 	return nil
+}
+
+func (repo *dangerZoneRepository) GetAll(filter map[string]string) (*[]domain.DangerZone, error) {
+	ctx := context.Background()
+	var resp []domain.DangerZone
+	dgBson, err := repo.db.Collection(repo.collection).Find(ctx, filter)
+	if err == mongo.ErrNoDocuments {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	for dgBson.Next(ctx) {
+		var dangerZone domain.DangerZone
+		err = dgBson.Decode(&dangerZone)
+		if err != nil {
+			log.Println("Error Decode danger zone")
+			return nil, err
+		}
+		resp = append(resp, dangerZone)
+	}
+	return &resp, nil
 }
