@@ -50,11 +50,11 @@ func (repo *dangerZoneRepository) GetAll(filter map[string]string) (*[]domain.Da
 	ctx := context.Background()
 	var resp []domain.DangerZone
 	dgBson, err := repo.db.Collection(repo.collection).Find(ctx, filter)
-	if err == mongo.ErrNoDocuments {
-		return nil, nil
-	}
 	if err != nil {
 		return nil, err
+	}
+	if dgBson.RemainingBatchLength() == 0 {
+		return nil, nil
 	}
 	for dgBson.Next(ctx) {
 		var dangerZone domain.DangerZone
