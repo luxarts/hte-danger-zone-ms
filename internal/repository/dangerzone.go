@@ -1,11 +1,10 @@
 package repository
 
 import (
-	"context"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+	"github.com/Masterminds/squirrel"
+	"github.com/jmoiron/sqlx"
+	"hte-danger-zone-ms/internal/defines"
 	"hte-danger-zone-ms/internal/domain"
-	"log"
 )
 
 type DangerZoneRepository interface {
@@ -15,31 +14,35 @@ type DangerZoneRepository interface {
 }
 
 type dangerZoneRepository struct {
-	db         *mongo.Database
-	collection string
+	db         *sqlx.DB
+	sqlBuilder *tableDz
 }
 
-func NewDangerZoneRepository(mc *mongo.Client, database string, collection string) DangerZoneRepository {
+func NewDangerZoneRepository(db *sqlx.DB) DangerZoneRepository {
 	return &dangerZoneRepository{
-		db:         mc.Database(database),
-		collection: collection,
+		db:         db,
+		sqlBuilder: &tableDz{table: defines.TableDangerZone},
 	}
 }
 
-func (repo *dangerZoneRepository) Create(body *domain.DangerZone) error {
-	bsonBody, err := bson.Marshal(body)
+func (repo *dangerZoneRepository) Create(dz *domain.DangerZone) error {
+	query, args, err := repo.sqlBuilder.CreateSQL(dz)
 	if err != nil {
 		return err
 	}
-
-	ctx := context.Background()
-	_, err = repo.db.Collection(repo.collection).InsertOne(ctx, bsonBody)
-	return err
+	_, err = repo.db.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (repo *dangerZoneRepository) Delete(deviceID string) error {
-	ctx := context.Background()
-	_, err := repo.db.Collection(repo.collection).DeleteOne(ctx, bson.D{{"device_id", deviceID}})
+	query, args, err := repo.sqlBuilder.DeleteSQL(deviceID)
+	if err != nil {
+		return err
+	}
+	_, err = repo.db.Exec(query, args...)
 	if err != nil {
 		return err
 	}
@@ -47,23 +50,26 @@ func (repo *dangerZoneRepository) Delete(deviceID string) error {
 }
 
 func (repo *dangerZoneRepository) GetAll(filter map[string]string) (*[]domain.DangerZone, error) {
-	ctx := context.Background()
-	var resp []domain.DangerZone
-	dgBson, err := repo.db.Collection(repo.collection).Find(ctx, filter)
-	if err == mongo.ErrNoDocuments {
-		return nil, nil
-	}
-	if err != nil {
-		return nil, err
-	}
-	for dgBson.Next(ctx) {
-		var dangerZone domain.DangerZone
-		err = dgBson.Decode(&dangerZone)
-		if err != nil {
-			log.Println("Error Decode danger zone")
-			return nil, err
-		}
-		resp = append(resp, dangerZone)
-	}
-	return &resp, nil
+
+	return nil, nil
+}
+
+type tableDz struct {
+	table string
+}
+
+func (t *tableDz) CreateSQL(dz *domain.DangerZone) (string, []interface{}, error) {
+	query, args, err := squirrel.Insert(t.table).
+		Columns("device_id", "longitude", "latitude", "radius", "end_ts").
+		Values(dz.DeviceID, dz.Longitude, dz.Latitude, dz.Radius, dz.EndTs).
+		PlaceholderFormat(squirrel.Dollar).
+		ToSql()
+	return query, args, err
+}
+
+func (t *tableDz) DeleteSQL(deviceID string) (string, []interface{}, error) {
+	query, args, err := squirrel.Delete(t.table).
+		Where(squirrel.Eq{"device_id": deviceID}).
+		ToSql()
+	return query, args, err
 }
