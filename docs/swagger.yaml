@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Danger Zones MicroService
-  description: REST microservice to create, get and delete danger zones. A danger zone is a circle area where the device should stay for a period of time. If the devices goes outside the zone before the time or stay inside after time, an alarm will be triggered and the zone will be deleted.
+  description: REST microservice to create, get and delete danger zones. A danger zone is a circular area where the device should stay for a period of time. If the devices goes outside the zone before the time or stay inside after time, an alarm will be triggered and the zone will be deleted.
   version: 1.0.0
 servers:
   - url: http://localhost:8080
@@ -9,24 +9,17 @@ tags:
   - name: dangerzone
     description: Danger zones endpoints
 paths:
-  /{companyID}/dangerzones:
+  /dangerzones:
     post:
       tags:
         - dangerzone
       summary: Create a danger zone
       description: Create a new danger zone for the device ID
-      parameters:
-        - name: companyID
-          in: path
-          description: Company ID where the device belongs
-          required: true
-          schema:
-            type: string
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Dangerzone'
+              $ref: '#/components/schemas/DangerzoneCreate'
       responses:
         '201':
           description: Created successfully
@@ -42,12 +35,6 @@ paths:
       summary: Get danger zones
       description: Get all danger zones active for a given company ID.
       parameters:
-        - name: companyID
-          in: path
-          description: Company ID where the device belongs
-          required: true
-          schema:
-            type: string
         - name: device_id
           in: query
           description: Filter by device_id. If this param is given it will return only the danger zone for the device ID.
@@ -72,12 +59,6 @@ paths:
         - dangerzone
       summary: Delete danger zone by device ID
       parameters:
-        - name: companyID
-          in: path
-          description: Company ID where the device belongs
-          required: true
-          schema:
-            type: string
         - name: device_id
           in: query
           description: Device ID related to the danger zone
@@ -92,6 +73,29 @@ paths:
 components:
   schemas:
     Dangerzone:
+      type: object
+      properties:
+        device_id:
+          type: string
+          example: ABCDEFG
+        longitude:
+          type: number
+          format: float
+          example: 123.456
+        latitude:
+          type: number
+          format: float
+          example: -123.456
+        radius:
+          type: number
+          format: float
+          example: 2.45
+        end_timestamp:
+          type: integer
+          format: int64
+          example: 1234567890
+          description: Time when the zone expires
+    DangerzoneCreate:
       type: object
       properties:
         device_id:
