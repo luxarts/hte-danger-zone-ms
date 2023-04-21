@@ -33,6 +33,13 @@ func (ctrl *dangerZoneController) Create(ctx *gin.Context) {
 		return
 	}
 
+	if !body.IsValid() {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid body",
+		})
+		return
+	}
+
 	err := ctrl.svc.Create(&body)
 
 	if err != nil {
