@@ -1,5 +1,5 @@
 package defines
 
 const (
-	TableDangerZone = "core.danger_zone"
+	TableDangerZone = "core.hte_danger_zones"
 )

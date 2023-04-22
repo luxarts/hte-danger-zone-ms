@@ -79,7 +79,7 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 	if deviceID != "" {
 		filter[defines.QueryParamDeviceID] = deviceID
 	}
-	dangerZones, err := ctrl.svc.GetAll(filter)
+	dangerZones, err := ctrl.svc.GetAll()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Internal Error"})

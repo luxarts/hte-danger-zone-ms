@@ -10,7 +10,7 @@ import (
 type DangerZoneRepository interface {
 	Create(body *domain.DangerZone) error
 	Delete(deviceID string) error
-	GetAll(filter map[string]string) (*[]domain.DangerZone, error)
+	GetAll() (*[]domain.DangerZone, error)
 }
 
 type dangerZoneRepository struct {
@@ -49,9 +49,26 @@ func (repo *dangerZoneRepository) Delete(deviceID string) error {
 	return nil
 }
 
-func (repo *dangerZoneRepository) GetAll(filter map[string]string) (*[]domain.DangerZone, error) {
-
-	return nil, nil
+func (repo *dangerZoneRepository) GetAll() (*[]domain.DangerZone, error) {
+	var dzs []domain.DangerZone
+	query, args, err := repo.sqlBuilder.GetAllSQL()
+	if err != nil {
+		return nil, err
+	}
+	rows, err := repo.db.Queryx(query, args...)
+	for rows.Next() {
+		var dz domain.DangerZone
+		err = rows.Err()
+		if err != nil {
+			return nil, err
+		}
+		err = rows.StructScan(&dz)
+		if err != nil {
+			return nil, err
+		}
+		dzs = append(dzs, dz)
+	}
+	return &dzs, err
 }
 
 type tableDz struct {
@@ -60,8 +77,8 @@ type tableDz struct {
 
 func (t *tableDz) CreateSQL(dz *domain.DangerZone) (string, []interface{}, error) {
 	query, args, err := squirrel.Insert(t.table).
-		Columns("device_id", "longitude", "latitude", "radius", "end_ts").
-		Values(dz.DeviceID, dz.Longitude, dz.Latitude, dz.Radius, dz.EndTs).
+		Columns("device_id", "company_id", "longitude", "latitude", "radius", "end_ts").
+		Values(dz.DeviceID, dz.CompanyID, dz.Longitude, dz.Latitude, dz.Radius, dz.EndTs).
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	return query, args, err
@@ -70,6 +87,14 @@ func (t *tableDz) CreateSQL(dz *domain.DangerZone) (string, []interface{}, error
 func (t *tableDz) DeleteSQL(deviceID string) (string, []interface{}, error) {
 	query, args, err := squirrel.Delete(t.table).
 		Where(squirrel.Eq{"device_id": deviceID}).
+		PlaceholderFormat(squirrel.Dollar).
+		ToSql()
+	return query, args, err
+}
+
+func (t *tableDz) GetAllSQL() (string, []interface{}, error) {
+	query, args, err := squirrel.Select("*").
+		From(t.table).
 		ToSql()
 	return query, args, err
 }
