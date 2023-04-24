@@ -12,7 +12,7 @@ type DangerZoneRepository interface {
 	Delete(deviceID string) error
 	GetAll() (*[]domain.DangerZone, error)
 	GetAllByCompanyID(companyID string) (*[]domain.DangerZone, error)
-	GetAllByDeviceID(deviceID string) (*[]domain.DangerZone, error)
+	GetByDeviceID(deviceID string) (*domain.DangerZone, error)
 }
 
 type dangerZoneRepository struct {
@@ -97,29 +97,25 @@ func (repo *dangerZoneRepository) GetAllByCompanyID(companyID string) (*[]domain
 	}
 	return &dzs, err
 }
-func (repo *dangerZoneRepository) GetAllByDeviceID(deviceID string) (*[]domain.DangerZone, error) {
-	var dzs []domain.DangerZone
-	query, args, err := repo.sqlBuilder.GetAllSQLByDeviceID(deviceID)
+func (repo *dangerZoneRepository) GetByDeviceID(deviceID string) (*domain.DangerZone, error) {
+	query, args, err := repo.sqlBuilder.GetSQLByDeviceID(deviceID)
 	if err != nil {
 		return nil, err
 	}
-	rows, err := repo.db.Queryx(query, args...)
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
+	row := repo.db.QueryRow(query, args...)
+	if row != nil {
 		var dz domain.DangerZone
-		err = rows.Err()
+		err = row.Err()
 		if err != nil {
 			return nil, err
 		}
-		err = rows.StructScan(&dz)
+		err = row.Scan(&dz)
 		if err != nil {
 			return nil, err
 		}
-		dzs = append(dzs, dz)
+		return &dz, err
 	}
-	return &dzs, err
+	return nil, err
 }
 
 type tableDz struct {
@@ -155,7 +151,7 @@ func (t *tableDz) GetAllSQLByCompanyID(companyID string) (string, []interface{},
 		ToSql()
 	return query, args, err
 }
-func (t *tableDz) GetAllSQLByDeviceID(deviceID string) (string, []interface{}, error) {
+func (t *tableDz) GetSQLByDeviceID(deviceID string) (string, []interface{}, error) {
 	query, args, err := squirrel.Select("*").
 		From(t.table).
 		Where(squirrel.Eq{"device_id": deviceID}).

@@ -12,7 +12,7 @@ type DangerZoneService interface {
 	Delete(deviceID string) error
 	GetAll() (*[]domain.DangerZone, error)
 	GetAllByCompanyID(companyID string) (*[]domain.DangerZone, error)
-	GetAllByDeviceID(deviceID string) (*[]domain.DangerZone, error)
+	GetByDeviceID(deviceID string) (*domain.DangerZone, error)
 }
 type dangerZoneService struct {
 	repo      repository.DangerZoneRepository
@@ -27,14 +27,16 @@ func NewDangerZoneService(repo repository.DangerZoneRepository, eventRepo reposi
 }
 
 func (svc *dangerZoneService) Create(body *domain.DangerZoneCreateReq) error {
-	dzCreate := body.ToDangerZone()
-	dzCreate.EndTs = time.Now().UTC().Add(time.Duration(body.TTL) * time.Second).Unix()
-	getDz, _ := svc.repo.GetAllByDeviceID(dzCreate.DeviceID)
-	lenDz := len(*getDz)
-	if lenDz == 1 {
+	getDz, err := svc.repo.GetByDeviceID(body.DeviceID)
+	if err != nil {
+		return err
+	}
+	if getDz != nil {
 		return defines.ErrZoneExists
 	}
-	err := svc.repo.Create(dzCreate)
+	dzCreate := body.ToDangerZone()
+	dzCreate.EndTs = time.Now().UTC().Add(time.Duration(body.TTL) * time.Second).Unix()
+	err = svc.repo.Create(dzCreate)
 	if err != nil {
 		return err
 	}
@@ -53,6 +55,6 @@ func (svc *dangerZoneService) GetAll() (*[]domain.DangerZone, error) {
 func (svc *dangerZoneService) GetAllByCompanyID(companyID string) (*[]domain.DangerZone, error) {
 	return svc.repo.GetAllByCompanyID(companyID)
 }
-func (svc *dangerZoneService) GetAllByDeviceID(deviceID string) (*[]domain.DangerZone, error) {
-	return svc.repo.GetAllByDeviceID(deviceID)
+func (svc *dangerZoneService) GetByDeviceID(deviceID string) (*domain.DangerZone, error) {
+	return svc.repo.GetByDeviceID(deviceID)
 }
