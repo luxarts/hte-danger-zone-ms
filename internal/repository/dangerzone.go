@@ -3,8 +3,13 @@ package repository
 import (
 	"github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"hte-danger-zone-ms/internal/defines"
 	"hte-danger-zone-ms/internal/domain"
+)
+
+const (
+	postgresErrNotUnique = "23505"
 )
 
 type DangerZoneRepository interface {
@@ -20,10 +25,12 @@ type dangerZoneRepository struct {
 	sqlBuilder *tableDz
 }
 
-func NewDangerZoneRepository(db *sqlx.DB) DangerZoneRepository {
+func NewDangerZoneRepository(db *sqlx.DB, schema string, table string) DangerZoneRepository {
 	return &dangerZoneRepository{
-		db:         db,
-		sqlBuilder: &tableDz{table: defines.TableDangerZone},
+		db: db,
+		sqlBuilder: &tableDz{
+			table: schema + "." + table,
+		},
 	}
 }
 
@@ -34,6 +41,11 @@ func (repo *dangerZoneRepository) Create(dz *domain.DangerZone) error {
 	}
 	_, err = repo.db.Exec(query, args...)
 	if err != nil {
+		if err, ok := err.(*pq.Error); ok {
+			if err.Code == postgresErrNotUnique {
+				return defines.ErrZoneExists
+			}
+		}
 		return err
 	}
 	return nil
