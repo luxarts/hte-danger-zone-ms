@@ -62,7 +62,6 @@ func mapRoutes(r *gin.Engine) {
 
 	// Routes
 	r.GET(defines.EndpointGetAllDangerZone, ctrl.GetAll)
-	r.GET(defines.EndpointGetAllDangerZoneByCompanyID, ctrl.GetAll)
 	r.POST(defines.EndpointCreateDangerZone, ctrl.Create)
 	r.DELETE(defines.EndpointDeleteDangerZone, ctrl.Delete)
 }
