@@ -6,7 +6,7 @@
 2. Run image
    ```
    docker run -d --name danger-zone-ms \
-     -e POSTGRES_HOST='mongo:27017' \
+     -e POSTGRES_HOST='localhost:5432' \
      -e POSTGRES_USER='postgres' \
      -e POSTGRES_HOST='postgres' \
      -e POSTGRES_SCHEMA='core' \
