@@ -6,9 +6,11 @@
 2. Run image
    ```
    docker run -d --name danger-zone-ms \
-     -e MONGO_HOST='mongo:27017' \
-     -e MONGO_DB='core' \
-     -e MONGO_DANGER_ZONE_COLLECTION='dangerzones' \
+     -e POSTGRES_HOST='mongo:27017' \
+     -e POSTGRES_USER='postgres' \
+     -e POSTGRES_HOST='postgres' \
+     -e POSTGRES_SCHEMA='core' \
+     -e POSTGRES_DANGER_ZONE_TABLE='danger_zones' \
      -e REDIS_HOST='redis:6379' \
      -e REDIS_PASSWORD='' \
      -e REDIS_CHANNEL_CREATE_ZONE='c-dangerzone:create' \

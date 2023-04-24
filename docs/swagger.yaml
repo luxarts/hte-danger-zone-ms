@@ -41,6 +41,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: company_id
+          in: query
+          description: Filter by company_id. If this param is given it will return only the danger zones for the company ID.
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Array of danger zones
