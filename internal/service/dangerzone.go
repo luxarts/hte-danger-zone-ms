@@ -11,7 +11,7 @@ type DangerZoneService interface {
 	Delete(deviceID string) error
 	GetAll() (*[]domain.DangerZone, error)
 	GetAllByCompanyID(companyID string) (*[]domain.DangerZone, error)
-	GetAllByDeviceID(deviceID string) (*[]domain.DangerZone, error)
+	GetByDeviceID(deviceID string) (*domain.DangerZone, error)
 }
 type dangerZoneService struct {
 	repo      repository.DangerZoneRepository
@@ -47,6 +47,6 @@ func (svc *dangerZoneService) GetAll() (*[]domain.DangerZone, error) {
 func (svc *dangerZoneService) GetAllByCompanyID(companyID string) (*[]domain.DangerZone, error) {
 	return svc.repo.GetAllByCompanyID(companyID)
 }
-func (svc *dangerZoneService) GetAllByDeviceID(deviceID string) (*[]domain.DangerZone, error) {
-	return svc.repo.GetAllByDeviceID(deviceID)
+func (svc *dangerZoneService) GetByDeviceID(deviceID string) (*domain.DangerZone, error) {
+	return svc.repo.GetByDeviceID(deviceID)
 }

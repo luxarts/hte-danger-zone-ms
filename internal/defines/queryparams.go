@@ -1,5 +1,6 @@
 package defines
 
 const (
-	QueryParamDeviceID = "device_id"
+	QueryParamDeviceID  = "device_id"
+	QueryParamCompanyID = "company_id"
 )

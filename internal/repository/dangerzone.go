@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -17,7 +18,7 @@ type DangerZoneRepository interface {
 	Delete(deviceID string) error
 	GetAll() (*[]domain.DangerZone, error)
 	GetAllByCompanyID(companyID string) (*[]domain.DangerZone, error)
-	GetAllByDeviceID(deviceID string) (*[]domain.DangerZone, error)
+	GetByDeviceID(deviceID string) (*domain.DangerZone, error)
 }
 
 type dangerZoneRepository struct {
@@ -87,7 +88,7 @@ func (repo *dangerZoneRepository) GetAll() (*[]domain.DangerZone, error) {
 }
 func (repo *dangerZoneRepository) GetAllByCompanyID(companyID string) (*[]domain.DangerZone, error) {
 	var dzs []domain.DangerZone
-	query, args, err := repo.sqlBuilder.GetAllSQLByCompanyID(companyID)
+	query, args, err := repo.sqlBuilder.GetAllByCompanyIDSQL(companyID)
 	if err != nil {
 		return nil, err
 	}
@@ -109,29 +110,26 @@ func (repo *dangerZoneRepository) GetAllByCompanyID(companyID string) (*[]domain
 	}
 	return &dzs, err
 }
-func (repo *dangerZoneRepository) GetAllByDeviceID(deviceID string) (*[]domain.DangerZone, error) {
-	var dzs []domain.DangerZone
-	query, args, err := repo.sqlBuilder.GetAllSQLByDeviceID(deviceID)
+func (repo *dangerZoneRepository) GetByDeviceID(deviceID string) (*domain.DangerZone, error) {
+	var dz domain.DangerZone
+	query, args, err := repo.sqlBuilder.GetByDeviceIDSQL(deviceID)
 	if err != nil {
 		return nil, err
 	}
-	rows, err := repo.db.Queryx(query, args...)
+	row := repo.db.QueryRowx(query, args...)
+	err = row.Err()
 	if err != nil {
 		return nil, err
 	}
-	for rows.Next() {
-		var dz domain.DangerZone
-		err = rows.Err()
-		if err != nil {
-			return nil, err
+	err = row.StructScan(&dz)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
 		}
-		err = rows.StructScan(&dz)
-		if err != nil {
-			return nil, err
-		}
-		dzs = append(dzs, dz)
+		return nil, err
 	}
-	return &dzs, err
+
+	return &dz, nil
 }
 
 type tableDz struct {
@@ -159,7 +157,7 @@ func (t *tableDz) GetAllSQL() (string, []interface{}, error) {
 		ToSql()
 	return query, args, err
 }
-func (t *tableDz) GetAllSQLByCompanyID(companyID string) (string, []interface{}, error) {
+func (t *tableDz) GetAllByCompanyIDSQL(companyID string) (string, []interface{}, error) {
 	query, args, err := squirrel.Select("*").
 		From(t.table).
 		Where(squirrel.Eq{"company_id": companyID}).
@@ -167,7 +165,7 @@ func (t *tableDz) GetAllSQLByCompanyID(companyID string) (string, []interface{},
 		ToSql()
 	return query, args, err
 }
-func (t *tableDz) GetAllSQLByDeviceID(deviceID string) (string, []interface{}, error) {
+func (t *tableDz) GetByDeviceIDSQL(deviceID string) (string, []interface{}, error) {
 	query, args, err := squirrel.Select("*").
 		From(t.table).
 		Where(squirrel.Eq{"device_id": deviceID}).
