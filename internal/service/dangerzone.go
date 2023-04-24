@@ -1,7 +1,6 @@
 package service
 
 import (
-	"hte-danger-zone-ms/internal/defines"
 	"hte-danger-zone-ms/internal/domain"
 	"hte-danger-zone-ms/internal/repository"
 	"time"
@@ -29,11 +28,6 @@ func NewDangerZoneService(repo repository.DangerZoneRepository, eventRepo reposi
 func (svc *dangerZoneService) Create(body *domain.DangerZoneCreateReq) error {
 	dzCreate := body.ToDangerZone()
 	dzCreate.EndTs = time.Now().UTC().Add(time.Duration(body.TTL) * time.Second).Unix()
-	getDz, _ := svc.repo.GetAllByDeviceID(dzCreate.DeviceID)
-	lenDz := len(*getDz)
-	if lenDz == 1 {
-		return defines.ErrZoneExists
-	}
 	err := svc.repo.Create(dzCreate)
 	if err != nil {
 		return err

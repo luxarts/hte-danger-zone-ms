@@ -8,4 +8,6 @@ const (
 	EnvPostgresUser                 = "POSTGRES_USER"
 	EnvPostgresPassword             = "POSTGRES_PASSWORD"
 	EnvPostgresHost                 = "POSTGRES_HOST"
+	EnvPostgresSchema               = "POSTGRES_SCHEMA"
+	EnvPostgresDangerZonesTable     = "POSTGRES_DANGER_ZONES_TABLE"
 )
