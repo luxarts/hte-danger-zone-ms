@@ -12,6 +12,7 @@ type DangerZoneRepository interface {
 	Delete(deviceID string) error
 	GetAll() (*[]domain.DangerZone, error)
 	GetAllByCompanyID(companyID string) (*[]domain.DangerZone, error)
+	GetAllByDeviceID(deviceID string) (*[]domain.DangerZone, error)
 }
 
 type dangerZoneRepository struct {
@@ -37,7 +38,6 @@ func (repo *dangerZoneRepository) Create(dz *domain.DangerZone) error {
 	}
 	return nil
 }
-
 func (repo *dangerZoneRepository) Delete(deviceID string) error {
 	query, args, err := repo.sqlBuilder.DeleteSQL(deviceID)
 	if err != nil {
@@ -49,7 +49,6 @@ func (repo *dangerZoneRepository) Delete(deviceID string) error {
 	}
 	return nil
 }
-
 func (repo *dangerZoneRepository) GetAll() (*[]domain.DangerZone, error) {
 	var dzs []domain.DangerZone
 	query, args, err := repo.sqlBuilder.GetAllSQL()
@@ -74,7 +73,6 @@ func (repo *dangerZoneRepository) GetAll() (*[]domain.DangerZone, error) {
 	}
 	return &dzs, err
 }
-
 func (repo *dangerZoneRepository) GetAllByCompanyID(companyID string) (*[]domain.DangerZone, error) {
 	var dzs []domain.DangerZone
 	query, args, err := repo.sqlBuilder.GetAllSQLByCompanyID(companyID)
@@ -98,7 +96,30 @@ func (repo *dangerZoneRepository) GetAllByCompanyID(companyID string) (*[]domain
 		dzs = append(dzs, dz)
 	}
 	return &dzs, err
-
+}
+func (repo *dangerZoneRepository) GetAllByDeviceID(deviceID string) (*[]domain.DangerZone, error) {
+	var dzs []domain.DangerZone
+	query, args, err := repo.sqlBuilder.GetAllSQLByDeviceID(deviceID)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := repo.db.Queryx(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var dz domain.DangerZone
+		err = rows.Err()
+		if err != nil {
+			return nil, err
+		}
+		err = rows.StructScan(&dz)
+		if err != nil {
+			return nil, err
+		}
+		dzs = append(dzs, dz)
+	}
+	return &dzs, err
 }
 
 type tableDz struct {
@@ -113,7 +134,6 @@ func (t *tableDz) CreateSQL(dz *domain.DangerZone) (string, []interface{}, error
 		ToSql()
 	return query, args, err
 }
-
 func (t *tableDz) DeleteSQL(deviceID string) (string, []interface{}, error) {
 	query, args, err := squirrel.Delete(t.table).
 		Where(squirrel.Eq{"device_id": deviceID}).
@@ -121,18 +141,24 @@ func (t *tableDz) DeleteSQL(deviceID string) (string, []interface{}, error) {
 		ToSql()
 	return query, args, err
 }
-
 func (t *tableDz) GetAllSQL() (string, []interface{}, error) {
 	query, args, err := squirrel.Select("*").
 		From(t.table).
 		ToSql()
 	return query, args, err
 }
-
 func (t *tableDz) GetAllSQLByCompanyID(companyID string) (string, []interface{}, error) {
 	query, args, err := squirrel.Select("*").
 		From(t.table).
 		Where(squirrel.Eq{"company_id": companyID}).
+		PlaceholderFormat(squirrel.Dollar).
+		ToSql()
+	return query, args, err
+}
+func (t *tableDz) GetAllSQLByDeviceID(deviceID string) (string, []interface{}, error) {
+	query, args, err := squirrel.Select("*").
+		From(t.table).
+		Where(squirrel.Eq{"device_id": deviceID}).
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	return query, args, err

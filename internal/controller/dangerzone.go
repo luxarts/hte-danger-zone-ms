@@ -12,7 +12,6 @@ type DangerZoneController interface {
 	Create(c *gin.Context)
 	Delete(c *gin.Context)
 	GetAll(c *gin.Context)
-	GetAllByCompanyID(c *gin.Context)
 }
 
 type dangerZoneController struct {
@@ -75,33 +74,36 @@ func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
 }
 
 func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
-	deviceID, _ := ctx.GetQuery(defines.QueryParamDeviceID)
-	filter := make(map[string]string)
-	if deviceID != "" {
-		filter[defines.QueryParamDeviceID] = deviceID
-	}
-	dangerZones, err := ctrl.svc.GetAll()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal Error"})
-		return
-	}
-	ctx.JSON(http.StatusOK, dangerZones)
-}
-
-func (ctrl *dangerZoneController) GetAllByCompanyID(ctx *gin.Context) {
 	companyID := ctx.Param("companyID")
 	deviceID, _ := ctx.GetQuery(defines.QueryParamDeviceID)
-	if deviceID != "" {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal Error"})
+	if companyID != "" {
+		if deviceID != "" {
+			dangerZones, err := ctrl.svc.GetAllByDeviceID(deviceID)
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"message": "Internal Error"})
+				return
+			}
+			ctx.JSON(http.StatusOK, dangerZones)
+			return
+		}
+		dangerZones, err := ctrl.svc.GetAllByCompanyID(companyID)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Internal Error"})
+			return
+		}
+		ctx.JSON(http.StatusOK, dangerZones)
 		return
 	}
-	dangerZones, err := ctrl.svc.GetAllByCompanyID(companyID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal Error"})
+	if companyID == "" && deviceID == "" {
+		dangerZones, err := ctrl.svc.GetAll()
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Internal Error"})
+			return
+		}
+		ctx.JSON(http.StatusOK, dangerZones)
 		return
 	}
-	ctx.JSON(http.StatusOK, dangerZones)
 }
