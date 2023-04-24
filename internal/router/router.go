@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"hte-danger-zone-ms/internal/controller"
 	"hte-danger-zone-ms/internal/defines"
 	"hte-danger-zone-ms/internal/repository"
@@ -27,16 +26,18 @@ func New() *gin.Engine {
 func mapRoutes(r *gin.Engine) {
 	// Init clients
 	ctx := context.Background()
-	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(
-		fmt.Sprintf("mongodb://%s",
-			os.Getenv(defines.EnvMongoHost),
-		)))
+	postgresURI := fmt.Sprintf("postgres://%s:%s@%s/postgres?sslmode=disable",
+		os.Getenv(defines.EnvPostgresUser),
+		os.Getenv(defines.EnvPostgresPassword),
+		os.Getenv(defines.EnvPostgresHost))
+	db, err := sqlx.Open("postgres", postgresURI)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(postgresURI)
+		log.Panicln(err)
 	}
-	err = mongoClient.Ping(ctx, readpref.Primary())
+	err = db.Ping()
 	if err != nil {
-		log.Fatalf("Error ping MongoDB %+v\n", err)
+		log.Fatalf("Error ping Postgres: %+v\n", err)
 	}
 
 	redisClient := redis.NewClient(&redis.Options{
@@ -50,7 +51,7 @@ func mapRoutes(r *gin.Engine) {
 	}
 
 	// Init repositories
-	repo := repository.NewDangerZoneRepository(mongoClient, os.Getenv(defines.EnvMongoDB), os.Getenv(defines.EnvDangerZonesCollection))
+	repo := repository.NewDangerZoneRepository(db, os.Getenv(defines.EnvPostgresSchema), os.Getenv(defines.EnvPostgresDangerZonesTable))
 	dzeRepo := repository.NewDangerZoneEventRepository(redisClient, os.Getenv(defines.EnvRedisChannelCreateDangerZone), os.Getenv(defines.EnvRedisChannelDeleteDangerZone))
 
 	// Init services

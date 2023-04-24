@@ -1,11 +1,13 @@
 package defines
 
 const (
-	EnvMongoHost                    = "MONGO_HOST"
-	EnvMongoDB                      = "MONGO_DB"
-	EnvDangerZonesCollection        = "MONGO_DANGER_ZONE_COLLECTION"
 	EnvRedisHost                    = "REDIS_HOST"
 	EnvRedisPassword                = "REDIS_PASSWORD"
 	EnvRedisChannelCreateDangerZone = "REDIS_CHANNEL_CREATE_ZONE"
 	EnvRedisChannelDeleteDangerZone = "REDIS_CHANNEL_DELETE_ZONE"
+	EnvPostgresUser                 = "POSTGRES_USER"
+	EnvPostgresPassword             = "POSTGRES_PASSWORD"
+	EnvPostgresHost                 = "POSTGRES_HOST"
+	EnvPostgresSchema               = "POSTGRES_SCHEMA"
+	EnvPostgresDangerZonesTable     = "POSTGRES_DANGER_ZONES_TABLE"
 )
