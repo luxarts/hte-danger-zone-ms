@@ -36,8 +36,7 @@ func (ctrl *dangerZoneController) Create(ctx *gin.Context) {
 		metrics.HTTPResponseCounter.
 			With(prometheus.Labels{
 				metrics.LabelStatusCode: strconv.Itoa(http.StatusBadRequest),
-				metrics.LabelMethod:     "POST",
-				metrics.LabelEndpoint:   defines.EndpointCreateDangerZone,
+				metrics.LabelEndpoint:   "POST " + defines.EndpointCreateDangerZone,
 			}).
 			Inc()
 		return
@@ -50,8 +49,7 @@ func (ctrl *dangerZoneController) Create(ctx *gin.Context) {
 		metrics.HTTPResponseCounter.
 			With(prometheus.Labels{
 				metrics.LabelStatusCode: strconv.Itoa(http.StatusBadRequest),
-				metrics.LabelMethod:     "POST",
-				metrics.LabelEndpoint:   defines.EndpointCreateDangerZone,
+				metrics.LabelEndpoint:   "POST " + defines.EndpointCreateDangerZone,
 			}).
 			Inc()
 		return
@@ -67,8 +65,7 @@ func (ctrl *dangerZoneController) Create(ctx *gin.Context) {
 		metrics.HTTPResponseCounter.
 			With(prometheus.Labels{
 				metrics.LabelStatusCode: strconv.Itoa(http.StatusInternalServerError),
-				metrics.LabelMethod:     "POST",
-				metrics.LabelEndpoint:   defines.EndpointCreateDangerZone,
+				metrics.LabelEndpoint:   "POST " + defines.EndpointCreateDangerZone,
 			}).
 			Inc()
 		return
@@ -78,8 +75,7 @@ func (ctrl *dangerZoneController) Create(ctx *gin.Context) {
 	metrics.HTTPResponseCounter.
 		With(prometheus.Labels{
 			metrics.LabelStatusCode: strconv.Itoa(http.StatusCreated),
-			metrics.LabelMethod:     "POST",
-			metrics.LabelEndpoint:   defines.EndpointCreateDangerZone,
+			metrics.LabelEndpoint:   "POST " + defines.EndpointCreateDangerZone,
 		}).
 		Inc()
 }
@@ -93,8 +89,7 @@ func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
 		metrics.HTTPResponseCounter.
 			With(prometheus.Labels{
 				metrics.LabelStatusCode: strconv.Itoa(http.StatusBadRequest),
-				metrics.LabelMethod:     "DELETE",
-				metrics.LabelEndpoint:   defines.EndpointDeleteDangerZone,
+				metrics.LabelEndpoint:   "DELETE " + defines.EndpointDeleteDangerZone,
 			}).
 			Inc()
 		return
@@ -107,8 +102,7 @@ func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
 		metrics.HTTPResponseCounter.
 			With(prometheus.Labels{
 				metrics.LabelStatusCode: strconv.Itoa(http.StatusInternalServerError),
-				metrics.LabelMethod:     "DELETE",
-				metrics.LabelEndpoint:   defines.EndpointDeleteDangerZone,
+				metrics.LabelEndpoint:   "DELETE " + defines.EndpointDeleteDangerZone,
 			}).
 			Inc()
 		return
@@ -119,8 +113,7 @@ func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
 	metrics.HTTPResponseCounter.
 		With(prometheus.Labels{
 			metrics.LabelStatusCode: strconv.Itoa(http.StatusNoContent),
-			metrics.LabelMethod:     "DELETE",
-			metrics.LabelEndpoint:   defines.EndpointDeleteDangerZone,
+			metrics.LabelEndpoint:   "DELETE " + defines.EndpointDeleteDangerZone,
 		}).
 		Inc()
 }
@@ -135,8 +128,7 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 			metrics.HTTPResponseCounter.
 				With(prometheus.Labels{
 					metrics.LabelStatusCode: strconv.Itoa(http.StatusInternalServerError),
-					metrics.LabelMethod:     "GET",
-					metrics.LabelEndpoint:   defines.EndpointGetAllDangerZone,
+					metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
 				}).
 				Inc()
 			return
@@ -147,8 +139,7 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 			metrics.HTTPResponseCounter.
 				With(prometheus.Labels{
 					metrics.LabelStatusCode: strconv.Itoa(http.StatusNotFound),
-					metrics.LabelMethod:     "GET",
-					metrics.LabelEndpoint:   defines.EndpointGetAllDangerZone,
+					metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
 				}).
 				Inc()
 			return
@@ -157,8 +148,7 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 		metrics.HTTPResponseCounter.
 			With(prometheus.Labels{
 				metrics.LabelStatusCode: strconv.Itoa(http.StatusOK),
-				metrics.LabelMethod:     "GET",
-				metrics.LabelEndpoint:   defines.EndpointGetAllDangerZone,
+				metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
 			}).
 			Inc()
 		return
@@ -173,8 +163,7 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 			metrics.HTTPResponseCounter.
 				With(prometheus.Labels{
 					metrics.LabelStatusCode: strconv.Itoa(http.StatusInternalServerError),
-					metrics.LabelMethod:     "GET",
-					metrics.LabelEndpoint:   defines.EndpointGetAllDangerZone,
+					metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
 				}).
 				Inc()
 			return
@@ -183,8 +172,7 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 		metrics.HTTPResponseCounter.
 			With(prometheus.Labels{
 				metrics.LabelStatusCode: strconv.Itoa(http.StatusOK),
-				metrics.LabelMethod:     "GET",
-				metrics.LabelEndpoint:   defines.EndpointGetAllDangerZone,
+				metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
 			}).
 			Inc()
 		return
@@ -197,8 +185,7 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 		metrics.HTTPResponseCounter.
 			With(prometheus.Labels{
 				metrics.LabelStatusCode: strconv.Itoa(http.StatusInternalServerError),
-				metrics.LabelMethod:     "GET",
-				metrics.LabelEndpoint:   defines.EndpointGetAllDangerZone,
+				metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
 			}).
 			Inc()
 		return
@@ -207,8 +194,7 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 	metrics.HTTPResponseCounter.
 		With(prometheus.Labels{
 			metrics.LabelStatusCode: strconv.Itoa(http.StatusOK),
-			metrics.LabelMethod:     "GET",
-			metrics.LabelEndpoint:   defines.EndpointGetAllDangerZone,
+			metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
 		}).
 		Inc()
 }
