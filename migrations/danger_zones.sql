@@ -1,3 +1,5 @@
+create schema if not exists core;
+
 create table if not exists core.danger_zones
 (
     device_id  varchar(64)      not null
@@ -10,7 +12,7 @@ create table if not exists core.danger_zones
     end_ts     integer
     );
 
-create unique index if not exists dangerzones_company_id_uindex
+create index if not exists dangerzones_company_id_index
     on core.danger_zones (company_id);
 
 create index if not exists dangerzones_device_id_index
