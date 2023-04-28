@@ -13,5 +13,5 @@ var (
 	HTTPResponseCounter = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "http_response_counter",
 		Help: "Response to endpoints",
-	}, []string{LabelStatusCode, LabelEndpoint, LabelMethod})
+	}, []string{LabelStatusCode, LabelEndpoint})
 )
