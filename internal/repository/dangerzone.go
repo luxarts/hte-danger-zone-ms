@@ -11,6 +11,8 @@ import (
 
 const (
 	postgresErrNotUnique = "23505"
+	schema               = "core"
+	table                = "danger_zones"
 )
 
 type DangerZoneRepository interface {
@@ -26,7 +28,7 @@ type dangerZoneRepository struct {
 	sqlBuilder *tableDz
 }
 
-func NewDangerZoneRepository(db *sqlx.DB, schema string, table string) DangerZoneRepository {
+func NewDangerZoneRepository(db *sqlx.DB) DangerZoneRepository {
 	return &dangerZoneRepository{
 		db: db,
 		sqlBuilder: &tableDz{

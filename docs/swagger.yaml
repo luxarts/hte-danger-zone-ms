@@ -124,3 +124,8 @@ components:
           format: int64
           example: 3600
           description: Time to live of the zone in seconds
+        country_id:
+          type: integer
+          format: int64
+          example: 1
+          description: Country ID needed for alarm.

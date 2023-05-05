@@ -7,6 +7,7 @@ type DangerZoneCreateReq struct {
 	Longitude float64 `json:"longitude"`
 	Radius    float64 `json:"radius"`
 	TTL       int64   `json:"ttl"`
+	CountryID int     `json:"country_id"`
 }
 
 type DangerZone struct {
@@ -16,6 +17,7 @@ type DangerZone struct {
 	Longitude float64 `json:"longitude" db:"longitude"`
 	Radius    float64 `json:"radius" db:"radius"`
 	EndTs     int64   `json:"end_ts" db:"end_ts"`
+	CountryID int     `json:"country_id" db:"country_id"`
 }
 
 func (r *DangerZoneCreateReq) ToDangerZone() *DangerZone {
@@ -25,6 +27,7 @@ func (r *DangerZoneCreateReq) ToDangerZone() *DangerZone {
 		Latitude:  r.Latitude,
 		Longitude: r.Longitude,
 		Radius:    r.Radius,
+		CountryID: r.CountryID,
 	}
 }
 func (r *DangerZoneCreateReq) IsValid() bool {
