@@ -51,7 +51,7 @@ func mapRoutes(r *gin.Engine) {
 	}
 
 	// Init repositories
-	repo := repository.NewDangerZoneRepository(db, os.Getenv(defines.EnvPostgresSchema), os.Getenv(defines.EnvPostgresDangerZonesTable))
+	repo := repository.NewDangerZoneRepository(db)
 	dzeRepo := repository.NewDangerZoneEventRepository(redisClient, os.Getenv(defines.EnvRedisChannelCreateDangerZone), os.Getenv(defines.EnvRedisChannelDeleteDangerZone))
 
 	// Init services

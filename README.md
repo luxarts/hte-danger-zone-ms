@@ -8,9 +8,7 @@
    docker run -d --name danger-zone-ms \
      -e POSTGRES_HOST='localhost:5432' \
      -e POSTGRES_USER='postgres' \
-     -e POSTGRES_HOST='postgres' \
-     -e POSTGRES_SCHEMA='core' \
-     -e POSTGRES_DANGER_ZONE_TABLE='danger_zones' \
+     -e POSTGRES_PASSWORD='' \
      -e REDIS_HOST='redis:6379' \
      -e REDIS_PASSWORD='' \
      -e REDIS_CHANNEL_CREATE_ZONE='c-dangerzone:create' \
@@ -19,7 +17,6 @@
      -p 8080:8080 \
      danger-zone-ms
    ```
-   
 ---
 
 ## [Sequence diagram](https://sequencediagram.org/index.html#initialData=C4S2BsFMAIBEEMB2BzSAnaAtA9omBZEAYzWwGV0A3YyAKFoAd41QiQnFhoAifbAIxBRoAQQYNu0eAGcp4xs1bskXbghTpoAL1wFipCmmpFIkmdAAmSVGgD6AW2m0rwePxkxuAJUgWQ0s1k0X39neFd3aU8+FGxYACFA6HtcZGx6AF4MgGFg8JgrDQwdPCzaeHEAWgA+QpsHaQAuaAAFAHkyABVoAHo69BLIWQBvC0hjSABJWAAaaHBwufBcObR4PwBXaTngCABfMKKGmpTY5tzIfOgwSHtD+sca4L8m1oBVeIAZSbIACWgiJV+mhBk0SJdgDBRuMaNMlot5itoGtNttoLtwAcKgwADyVIHWdANRoAJgADABGaDQiZw+YI5aIVbrEBbHb7TIZADikC48HA4EshOKumkZWxNWBxOgXIAot0+sLQfciY9qqc0s0fOtrpC7ti8QSjo5SWSydAANo02GzenAJZIlGstEYvZzAB0noAupyeVxgdpdNB+ABPSwwkzQabiqq1YXSuUK4GggD8YwmthAFgy6ZtKrsao12C1lwsutu5XEhqlJvJ5utJjpC3tiKZyJZbPRHNoWVgkCgkKFRUDpQylYYkvjJrgss+8tlvWTorTEcgmezucbsHzx3VqWLcH7vJgNzuNekTxCTRaH2+fwBRpsoMaYwHBVX03H1anTXJABZ6CAA)

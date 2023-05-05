@@ -9,7 +9,8 @@ create table if not exists core.danger_zones
     radius     double precision not null,
     longitude  double precision not null,
     latitude   double precision not null,
-    end_ts     integer
+    end_ts     integer,
+    country_id integer
     );
 
 create index if not exists dangerzones_company_id_index
