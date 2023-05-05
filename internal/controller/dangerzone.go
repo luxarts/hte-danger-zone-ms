@@ -2,10 +2,13 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
 	"hte-danger-zone-ms/internal/defines"
 	"hte-danger-zone-ms/internal/domain"
 	"hte-danger-zone-ms/internal/service"
+	"hte-danger-zone-ms/metrics"
 	"net/http"
+	"strconv"
 )
 
 type DangerZoneController interface {
@@ -30,6 +33,12 @@ func (ctrl *dangerZoneController) Create(ctx *gin.Context) {
 			"message": "failed ShouldBindJSON",
 			"error":   err.Error(),
 		})
+		metrics.HTTPResponseCounter.
+			With(prometheus.Labels{
+				metrics.LabelStatusCode: strconv.Itoa(http.StatusBadRequest),
+				metrics.LabelEndpoint:   "POST " + defines.EndpointCreateDangerZone,
+			}).
+			Inc()
 		return
 	}
 
@@ -37,6 +46,12 @@ func (ctrl *dangerZoneController) Create(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "invalid body",
 		})
+		metrics.HTTPResponseCounter.
+			With(prometheus.Labels{
+				metrics.LabelStatusCode: strconv.Itoa(http.StatusBadRequest),
+				metrics.LabelEndpoint:   "POST " + defines.EndpointCreateDangerZone,
+			}).
+			Inc()
 		return
 	}
 
@@ -47,10 +62,22 @@ func (ctrl *dangerZoneController) Create(ctx *gin.Context) {
 			"message": "failed Create",
 			"error":   err.Error(),
 		})
+		metrics.HTTPResponseCounter.
+			With(prometheus.Labels{
+				metrics.LabelStatusCode: strconv.Itoa(http.StatusInternalServerError),
+				metrics.LabelEndpoint:   "POST " + defines.EndpointCreateDangerZone,
+			}).
+			Inc()
 		return
 	}
 
 	ctx.JSON(http.StatusCreated, body)
+	metrics.HTTPResponseCounter.
+		With(prometheus.Labels{
+			metrics.LabelStatusCode: strconv.Itoa(http.StatusCreated),
+			metrics.LabelEndpoint:   "POST " + defines.EndpointCreateDangerZone,
+		}).
+		Inc()
 }
 
 func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
@@ -59,6 +86,12 @@ func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid device_id",
 		})
+		metrics.HTTPResponseCounter.
+			With(prometheus.Labels{
+				metrics.LabelStatusCode: strconv.Itoa(http.StatusBadRequest),
+				metrics.LabelEndpoint:   "DELETE " + defines.EndpointDeleteDangerZone,
+			}).
+			Inc()
 		return
 	}
 	err := ctrl.svc.Delete(deviceID)
@@ -66,11 +99,23 @@ func (ctrl *dangerZoneController) Delete(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Internal Error",
 		})
+		metrics.HTTPResponseCounter.
+			With(prometheus.Labels{
+				metrics.LabelStatusCode: strconv.Itoa(http.StatusInternalServerError),
+				metrics.LabelEndpoint:   "DELETE " + defines.EndpointDeleteDangerZone,
+			}).
+			Inc()
 		return
 	}
 	ctx.JSON(http.StatusNoContent, gin.H{
 		"message": "Dangerzone eliminated",
 	})
+	metrics.HTTPResponseCounter.
+		With(prometheus.Labels{
+			metrics.LabelStatusCode: strconv.Itoa(http.StatusNoContent),
+			metrics.LabelEndpoint:   "DELETE " + defines.EndpointDeleteDangerZone,
+		}).
+		Inc()
 }
 
 func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
@@ -80,14 +125,32 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"message": "Internal Error"})
+			metrics.HTTPResponseCounter.
+				With(prometheus.Labels{
+					metrics.LabelStatusCode: strconv.Itoa(http.StatusInternalServerError),
+					metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
+				}).
+				Inc()
 			return
 		}
 		if dangerZones == nil {
 			ctx.JSON(http.StatusNotFound, gin.H{
 				"message": "danger zone not found for the given device_id"})
+			metrics.HTTPResponseCounter.
+				With(prometheus.Labels{
+					metrics.LabelStatusCode: strconv.Itoa(http.StatusNotFound),
+					metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
+				}).
+				Inc()
 			return
 		}
 		ctx.JSON(http.StatusOK, dangerZones)
+		metrics.HTTPResponseCounter.
+			With(prometheus.Labels{
+				metrics.LabelStatusCode: strconv.Itoa(http.StatusOK),
+				metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
+			}).
+			Inc()
 		return
 	}
 
@@ -97,9 +160,21 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"message": "Internal Error"})
+			metrics.HTTPResponseCounter.
+				With(prometheus.Labels{
+					metrics.LabelStatusCode: strconv.Itoa(http.StatusInternalServerError),
+					metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
+				}).
+				Inc()
 			return
 		}
 		ctx.JSON(http.StatusOK, dangerZones)
+		metrics.HTTPResponseCounter.
+			With(prometheus.Labels{
+				metrics.LabelStatusCode: strconv.Itoa(http.StatusOK),
+				metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
+			}).
+			Inc()
 		return
 	}
 
@@ -107,7 +182,19 @@ func (ctrl *dangerZoneController) GetAll(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Internal Error"})
+		metrics.HTTPResponseCounter.
+			With(prometheus.Labels{
+				metrics.LabelStatusCode: strconv.Itoa(http.StatusInternalServerError),
+				metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
+			}).
+			Inc()
 		return
 	}
 	ctx.JSON(http.StatusOK, dangerZones)
+	metrics.HTTPResponseCounter.
+		With(prometheus.Labels{
+			metrics.LabelStatusCode: strconv.Itoa(http.StatusOK),
+			metrics.LabelEndpoint:   "GET " + defines.EndpointGetAllDangerZone,
+		}).
+		Inc()
 }

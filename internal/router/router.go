@@ -11,7 +11,9 @@ import (
 	"hte-danger-zone-ms/internal/defines"
 	"hte-danger-zone-ms/internal/repository"
 	"hte-danger-zone-ms/internal/service"
+	"hte-danger-zone-ms/metrics"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -64,4 +66,8 @@ func mapRoutes(r *gin.Engine) {
 	r.GET(defines.EndpointGetAllDangerZone, ctrl.GetAll)
 	r.POST(defines.EndpointCreateDangerZone, ctrl.Create)
 	r.DELETE(defines.EndpointDeleteDangerZone, ctrl.Delete)
+	r.GET("/ping", func(ctx *gin.Context) {
+		metrics.HTTPGetPingCounter.Inc()
+		ctx.String(http.StatusOK, "pong")
+	})
 }
